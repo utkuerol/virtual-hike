@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:virtual_hike/logic/model/hiker.dart';
 import 'package:virtual_hike/ui/ui_elements.dart';
-import 'package:virtual_hike/ui/widget/alerts.dart';
+import 'package:virtual_hike/ui/alerts.dart';
 import 'package:virtual_hike/ui/widget/history.dart';
 
 class MyAppBar extends AppBar {

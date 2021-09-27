@@ -12,10 +12,7 @@ class Path {
   int _progressInCurrent = 0;
 
   Path(points, this.distance) {
-    this.points = points;
-    print(this.points.length);
     this.points = simplifyPath(points);
-    print(this.points.length);
   }
 
   int getAtPointInPath() {
@@ -63,12 +60,27 @@ class Path {
   }
 
   List<LatLng> simplifyPath(List<LatLng> points) {
+    if (points.length <= 3000) {
+      return points;
+    }
+    print("Total points before simplification: " + points.length.toString());
+    List<LatLng> toReturn = [];
+    var simpBegin = 500;
+    var simpEnd = points.length - 500;
+    var beginUnsimplified = points.sublist(0, simpBegin);
+    var endUnsimplified = points.sublist(simpEnd, points.length);
+    var toSimplify = points.sublist(simpBegin, simpEnd);
     List<Point> sp = [];
-    points.forEach((e) => sp.add(new Point(e.latitude, e.longitude)));
-    List<LatLng> p = [];
+    toSimplify.forEach((e) => sp.add(new Point(e.latitude, e.longitude)));
+    List<LatLng> simplified = [];
     simplify(sp, tolerance: 0.001)
-        .forEach((e) => p.add(LatLng(e.x.toDouble(), e.y.toDouble())));
-    return p;
+        .forEach((e) => simplified.add(LatLng(e.x.toDouble(), e.y.toDouble())));
+
+    toReturn.addAll(beginUnsimplified);
+    toReturn.addAll(simplified);
+    toReturn.addAll(endUnsimplified);
+    print("Total points after simplification: " + toReturn.length.toString());
+    return toReturn;
   }
 
   Map toJson() {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_hike/logic/model/hiker.dart';
 import 'package:virtual_hike/ui/misc.dart';
-import 'package:virtual_hike/ui/widget/alerts.dart';
+import 'package:virtual_hike/ui/alerts.dart';
 import 'package:virtual_hike/ui/widget/app.dart';
 import 'package:virtual_hike/ui/widget/app_bar.dart';
 

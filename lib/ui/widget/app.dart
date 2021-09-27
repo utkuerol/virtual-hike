@@ -14,7 +14,7 @@ import 'package:virtual_hike/logic/model/hiker.dart';
 import 'package:virtual_hike/logic/model/path.dart';
 import 'package:virtual_hike/logic/operations/map.dart';
 import 'package:virtual_hike/ui/misc.dart';
-import 'package:virtual_hike/ui/widget/alerts.dart';
+import 'package:virtual_hike/ui/alerts.dart';
 import 'package:virtual_hike/ui/widget/app_bar.dart';
 import 'package:virtual_hike/ui/widget/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
     if (this.widget.hiker == null) {
       _loadSavedState().then((value) {
         setState(() {
+          _loading = true;
           _initPlatformState();
         });
       });
@@ -98,6 +99,8 @@ class _MyAppState extends State<MyApp> {
           _loading = false;
         });
       });
+    } else {
+      _loading = false;
     }
     if (!mounted) return;
   }
@@ -290,7 +293,7 @@ class _MyAppState extends State<MyApp> {
                         child: Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: <Widget>[
-                              Welcome(_hiker),
+                              Welcome(_hiker, _routeSelectionOn),
                               SizedBox(height: 10),
                               _routeSelectionOn
                                   ? Row(
@@ -402,12 +405,15 @@ class _MyAppState extends State<MyApp> {
                   _handleMapLongPress(tapPos, latLng)),
           layers: [
             TileLayerOptions(
-              urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-              subdomains: ['a', 'b', 'c'],
-              attributionBuilder: (_) {
-                return Text("© OpenStreetMap contributors");
-              },
-            ),
+                urlTemplate:
+                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                subdomains: ['a', 'b', 'c'],
+                attributionBuilder: (_) {
+                  return Text("© OpenStreetMap contributors");
+                },
+                errorTileCallback: (i, j) {
+                  MyAppAlerts.alertMapProviderError(context);
+                }),
             MarkerLayerOptions(
               markers: [
                 Marker(

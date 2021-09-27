@@ -31,6 +31,20 @@ class MyAppAlerts {
     );
   }
 
+  static void alertMapProviderError(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(UIElements.MAP_PROVIDER_ERROR),
+          content: Text(UIElements.MAP_PROVIDER_ERROR_GUIDE),
+          actions: <Widget>[MyAppButtons.buildButtonBack(context, "Okay")],
+          elevation: 5,
+        );
+      },
+    );
+  }
+
   static void alertDialogRoutesEmpty(BuildContext context) {
     showDialog(
       context: context,
