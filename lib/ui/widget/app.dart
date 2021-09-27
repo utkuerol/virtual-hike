@@ -38,6 +38,7 @@ class _MyAppState extends State<MyApp> {
   Timer? timer;
   Path? _previewPath;
   bool _loading = false;
+  TextEditingController _textFieldController = TextEditingController();
 
   @override
   void initState() {
@@ -80,6 +81,7 @@ class _MyAppState extends State<MyApp> {
     } else {
       print("no hiker found");
       _loading = false;
+      _displayNewUserSetup(context);
     }
   }
 
@@ -98,6 +100,39 @@ class _MyAppState extends State<MyApp> {
       });
     }
     if (!mounted) return;
+  }
+
+  Future<void> _displayNewUserSetup(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Setup your username'),
+          content: TextField(
+            controller: _textFieldController,
+            decoration: InputDecoration(hintText: "Username"),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            ElevatedButton(
+              child: Text('Okay'),
+              onPressed: () {
+                setState(() {
+                  _hiker.setName(_textFieldController.text);
+                  saveState();
+                });
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   Future _enableLocationServices() async {

@@ -19,6 +19,8 @@ dependencies:
   geolocator: ^7.6.2
   health: ^3.1.1+1
   shared_preferences: ^2.0.8
+  simplify: ^1.0.2
+  geopoint: ^1.0.0
 
 dev_dependencies:
   flutter_test:

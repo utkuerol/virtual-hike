@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:latlong2/latlong.dart';
+import 'package:simplify/simplify.dart';
 import 'package:virtual_hike/logic/model/point.dart';
+import 'package:geopoint/geopoint.dart';
 
 class Path {
   List<LatLng> points = [];
@@ -7,7 +11,12 @@ class Path {
   int _atPointInPath = 0;
   int _progressInCurrent = 0;
 
-  Path(this.points, this.distance);
+  Path(points, this.distance) {
+    this.points = points;
+    print(this.points.length);
+    this.points = simplifyPath(points);
+    print(this.points.length);
+  }
 
   int getAtPointInPath() {
     return _atPointInPath;
@@ -53,8 +62,17 @@ class Path {
     return at;
   }
 
+  List<LatLng> simplifyPath(List<LatLng> points) {
+    List<Point> sp = [];
+    points.forEach((e) => sp.add(new Point(e.latitude, e.longitude)));
+    List<LatLng> p = [];
+    simplify(sp, tolerance: 0.001)
+        .forEach((e) => p.add(LatLng(e.x.toDouble(), e.y.toDouble())));
+    return p;
+  }
+
   Map toJson() {
-    List<Map> pointsJson = this.points.map((e) => Point.toJson(e)).toList();
+    List<Map> pointsJson = this.points.map((e) => PathPoint.toJson(e)).toList();
     return {
       'points': pointsJson,
       'distance': distance,
@@ -65,7 +83,7 @@ class Path {
 
   Path.fromJson(Map json)
       : points = List<LatLng>.from(
-            json['points']?.map((e) => Point.fromJson(e)).toList()),
+            json['points']?.map((e) => PathPoint.fromJson(e)).toList()),
         distance = json["distance"] ?? 0,
         _atPointInPath = json['atPointInPath'],
         _progressInCurrent = json['progressInCurrent'];

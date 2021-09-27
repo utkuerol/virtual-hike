@@ -1,6 +1,6 @@
 import 'package:latlong2/latlong.dart';
 
-class Point {
+class PathPoint {
   static Map toJson(LatLng point) {
     return {'latitude': point.latitude, 'longtitude': point.longitude};
   }

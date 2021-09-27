@@ -97,18 +97,18 @@ class Route {
 
   Map toJson() {
     return {
-      'from': Point.toJson(_from),
-      'to': Point.toJson(_to),
-      'at': Point.toJson(_at),
+      'from': PathPoint.toJson(_from),
+      'to': PathPoint.toJson(_to),
+      'at': PathPoint.toJson(_at),
       'path': _path.toJson(),
       'start': _start?.toIso8601String(),
     };
   }
 
   Route.fromJson(Map json)
-      : _from = Point.fromJson(json['from']),
-        _to = Point.fromJson(json['to']),
-        _at = Point.fromJson(json['at']),
+      : _from = PathPoint.fromJson(json['from']),
+        _to = PathPoint.fromJson(json['to']),
+        _at = PathPoint.fromJson(json['at']),
         _path = Path.fromJson(json['path']),
         _start = DateTime.parse(json['start']);
 }
