@@ -13,9 +13,8 @@ import 'package:virtual_hike/infrastructure/openrouteservice/client.dart';
 import 'package:virtual_hike/logic/model/hiker.dart';
 import 'package:virtual_hike/logic/model/path.dart';
 import 'package:virtual_hike/logic/operations/map.dart';
-import 'package:virtual_hike/ui/buttons.dart';
 import 'package:virtual_hike/ui/misc.dart';
-import 'package:virtual_hike/ui/ui_elements.dart';
+import 'package:virtual_hike/ui/widget/alerts.dart';
 import 'package:virtual_hike/ui/widget/app_bar.dart';
 import 'package:virtual_hike/ui/widget/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -43,6 +42,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    _loading = true;
     if (this.widget.hiker == null) {
       _loadSavedState().then((value) {
         setState(() {
@@ -52,7 +52,9 @@ class _MyAppState extends State<MyApp> {
     } else {
       print("loading hiker from widget");
       _hiker = this.widget.hiker!;
-      _loading = false;
+      setState(() {
+        _initPlatformState();
+      });
     }
     timer = Timer.periodic(Duration(seconds: 3), (Timer t) => _fetchStepData());
   }
@@ -68,6 +70,7 @@ class _MyAppState extends State<MyApp> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     var loadedHiker = prefs.getString("HIKER");
     if (loadedHiker != null) {
+      print("got hiker");
       setState(() {
         _hiker = Hiker.fromJson(jsonDecode(loadedHiker));
         _loading = false;
@@ -75,6 +78,7 @@ class _MyAppState extends State<MyApp> {
             _hiker.getActiveRoute()?.getAt() ?? _mapctl.center, _mapctl.zoom);
       });
     } else {
+      print("no hiker found");
       _loading = false;
     }
   }
@@ -87,7 +91,11 @@ class _MyAppState extends State<MyApp> {
 
   _initPlatformState() async {
     if (_hiker.getActiveRoute() == null) {
-      _enableLocationServices().then((value) => _loading = false);
+      _enableLocationServices().then((value) {
+        setState(() {
+          _loading = false;
+        });
+      });
     }
     if (!mounted) return;
   }
@@ -148,38 +156,10 @@ class _MyAppState extends State<MyApp> {
         print("Authorization not granted");
         setState(() {
           _stepsAvailable = false;
-          _alertDialogStepsUnavailable(context);
+          MyAppAlerts.alertDialogStepsUnavailable(context);
         });
       }
     }
-  }
-
-  void _alertDialogStepsUnavailable(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(UIElements.STEPS_UNAVAILABLE_ERROR),
-          content: Text(UIElements.STEPS_UNAVAILABLE_INFO),
-          actions: <Widget>[MyAppButtons.buildButtonOK(context, "Okay")],
-          elevation: 5,
-        );
-      },
-    );
-  }
-
-  void _alertDialogRouteNotChosen(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(UIElements.ROUTE_SELECTION_UNSUCCESSFUL),
-          content: Text(UIElements.ROUTE_SELECTION_GUIDE),
-          actions: <Widget>[MyAppButtons.buildButtonOK(context, "Okay")],
-          elevation: 5,
-        );
-      },
-    );
   }
 
   void _handleMapLongPress(tapPos, latLng) {
@@ -229,7 +209,7 @@ class _MyAppState extends State<MyApp> {
           });
           _routeSelectionOn = !_routeSelectionOn;
         } else {
-          _alertDialogRouteNotChosen(context);
+          MyAppAlerts.alertDialogRouteNotChosen(context);
         }
       } else {
         _fromSelection = null;
@@ -369,7 +349,7 @@ class _MyAppState extends State<MyApp> {
                       )));
             },
           ),
-          if (_loading) Center(child: CircularProgressIndicator()),
+          _loading ? Center(child: CircularProgressIndicator()) : Container(),
         ],
       ),
     );

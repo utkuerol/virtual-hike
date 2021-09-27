@@ -9,4 +9,8 @@ class UIElements {
       "You haven't chosen a valid route!";
   static const String ROUTE_SELECTION_GUIDE =
       "Please select a starting point and an ending point by long pressing on the map.";
+  static const String ROUTE_HISTORY_NO_ROUTES =
+      "You don't have any saved routes!";
+  static const String ROUTE_HISTORY_NO_ROUTES_GUIDE =
+      "Press \"Back\" to go back to the main page and create a route.";
 }

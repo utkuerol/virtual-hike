@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:virtual_hike/logic/model/hiker.dart';
 import 'package:virtual_hike/ui/misc.dart';
+import 'package:virtual_hike/ui/widget/alerts.dart';
 import 'package:virtual_hike/ui/widget/app.dart';
 import 'package:virtual_hike/ui/widget/app_bar.dart';
 
@@ -22,15 +23,30 @@ class _HistoryState extends State<History> {
   _HistoryState(this._hiker);
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: MyAppBar(context, false, _hiker),
-      body: Center(
-        child: ListView.builder(
-          itemCount: _hiker.getRoutes().length,
-          itemBuilder: (context, index) {
-            return card(context, index);
-          },
+    return WillPopScope(
+      onWillPop: () {
+        Navigator.pushAndRemoveUntil(
+            context, MaterialPageRoute(builder: (context) => MyApp(_hiker)),
+            (route) {
+          return false;
+        });
+        return Future.value(true);
+      },
+      child: Scaffold(
+        appBar: MyAppBar(context, false, _hiker),
+        body: Center(
+          child: ListView.builder(
+            itemCount: _hiker.getRoutes().length,
+            itemBuilder: (context, index) {
+              return card(context, index);
+            },
+          ),
         ),
       ),
     );
@@ -41,6 +57,9 @@ class _HistoryState extends State<History> {
       _hiker.getRoutes().removeAt(index);
       if (_hiker.getRoutes().isEmpty) {
         _hiker.setActiveRoute(null);
+        if (_hiker.getRoutes().isEmpty) {
+          MyAppAlerts.alertDialogRoutesEmpty(context);
+        }
       }
       saveState();
     });
