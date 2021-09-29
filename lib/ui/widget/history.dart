@@ -56,7 +56,7 @@ class _HistoryState extends State<History> {
     setState(() {
       _hiker.getRoutes().removeAt(index);
       if (_hiker.getRoutes().isEmpty) {
-        _hiker.setActiveRoute(null);
+        _hiker.setActiveRouteIndex(null);
         if (_hiker.getRoutes().isEmpty) {
           MyAppAlerts.alertDialogRoutesEmpty(context);
         }
@@ -122,7 +122,7 @@ class _HistoryState extends State<History> {
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             TextButton(
               onPressed: () {
-                _hiker.setActiveRoute(route);
+                _hiker.setActiveRouteIndex(_hiker.getRoutes().indexOf(route));
                 Navigator.pushAndRemoveUntil(context,
                     MaterialPageRoute(builder: (context) => MyApp(_hiker)),
                     (route) {
@@ -131,7 +131,7 @@ class _HistoryState extends State<History> {
               },
               style: TextButton.styleFrom(
                   backgroundColor: Colors.white70, primary: Colors.black87),
-              child: Text('Open'),
+              child: Text('Set Active'),
             ),
             TextButton(
               onPressed: () => deleteRoute(i),

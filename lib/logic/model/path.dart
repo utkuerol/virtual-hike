@@ -3,13 +3,13 @@ import 'dart:math';
 import 'package:latlong2/latlong.dart';
 import 'package:simplify/simplify.dart';
 import 'package:virtual_hike/logic/model/point.dart';
-import 'package:geopoint/geopoint.dart';
 
 class Path {
   List<LatLng> points = [];
   double distance;
   int _atPointInPath = 0;
   int _progressInCurrent = 0;
+  bool _completed = false;
 
   Path(points, this.distance) {
     this.points = simplifyPath(points);
@@ -30,33 +30,48 @@ class Path {
   }
 
   LatLng moveInPath(int meters) {
-    Distance distance = new Distance();
-    int diffNextPoint = distance
-        .distance(points[_atPointInPath], points[_atPointInPath + 1])
-        .toInt();
-    diffNextPoint -= _progressInCurrent;
-    while (meters >= diffNextPoint) {
-      print("Moving from " +
-          _atPointInPath.toString() +
-          " to" +
-          (_atPointInPath + 1).toString());
-      _atPointInPath++;
-      meters -= diffNextPoint;
-      diffNextPoint = distance
+    if (!_completed) {
+      Distance distance = new Distance();
+      int diffNextPoint = distance
           .distance(points[_atPointInPath], points[_atPointInPath + 1])
           .toInt();
+      diffNextPoint -= _progressInCurrent;
+      while (meters >= diffNextPoint) {
+        print("Moving from " +
+            _atPointInPath.toString() +
+            " to" +
+            (_atPointInPath + 1).toString());
+        _atPointInPath++;
+        meters -= diffNextPoint;
+        if (_atPointInPath + 1 >= points.length) {
+          diffNextPoint = 0;
+          meters = 0;
+          _completed = true;
+          break;
+        } else {
+          diffNextPoint = distance
+              .distance(points[_atPointInPath], points[_atPointInPath + 1])
+              .toInt();
+        }
+      }
+      _progressInCurrent += meters;
+
+      print("Current point in path: " + _atPointInPath.toString());
+      print("Meters until next point in path: " + diffNextPoint.toString());
+      print(
+          "Progress in current subpath (m): " + _progressInCurrent.toString());
+
+      if (_atPointInPath + 1 < points.length) {
+        var bearing = distance.bearing(
+            points[_atPointInPath], points[_atPointInPath + 1]);
+        var at = distance.offset(
+            points[_atPointInPath], _progressInCurrent, bearing);
+        return at;
+      }
+      return points[_atPointInPath];
     }
-    _progressInCurrent += meters;
-
-    print("Current point in path: " + _atPointInPath.toString());
-    print("Meters until next point in path: " + diffNextPoint.toString());
-    print("Progress in current subpath (m): " + _progressInCurrent.toString());
-
-    var bearing =
-        distance.bearing(points[_atPointInPath], points[_atPointInPath + 1]);
-    var at =
-        distance.offset(points[_atPointInPath], _progressInCurrent, bearing);
-    return at;
+    print("path already completed, not moving any further");
+    return points[_atPointInPath];
   }
 
   List<LatLng> simplifyPath(List<LatLng> points) {

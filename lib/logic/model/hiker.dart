@@ -4,7 +4,7 @@ import 'package:latlong2/latlong.dart' hide Path;
 
 class Hiker {
   String _name = "";
-  Route? _activeRoute;
+  int? _activeRouteIndex;
   List<Route> _routes = [];
 
   Hiker(String name) {
@@ -20,11 +20,11 @@ class Hiker {
   }
 
   Route? getActiveRoute() {
-    return this._activeRoute;
+    return _activeRouteIndex != null ? _routes[this._activeRouteIndex!] : null;
   }
 
-  void setActiveRoute(Route? route) {
-    this._activeRoute = route;
+  void setActiveRouteIndex(int? route) {
+    this._activeRouteIndex = route;
   }
 
   List<Route> getRoutes() {
@@ -34,24 +34,21 @@ class Hiker {
   void newRoute(LatLng from, LatLng to, Path path) {
     Route route = new Route(from, to, from, path);
     this._routes.add(route);
-    this._activeRoute = route;
+    this._activeRouteIndex = _routes.indexOf(route);
   }
 
   Hiker.fromJson(Map json)
       : _name = json['name'],
-        _activeRoute = (json['activeRoute'] != null)
-            ? Route.fromJson(json['activeRoute'])
-            : null,
-        _routes = (json['activeRoute'] != null)
-            ? List<Route>.from(
-                json['routes']?.map((e) => Route.fromJson(e)).toList())
-            : [];
+        _activeRouteIndex =
+            (json['activeRoute'] != null) ? json['activeRoute'] : null,
+        _routes = List<Route>.from(
+            json['routes'].map((e) => Route.fromJson(e)).toList());
 
   Map toJson() {
     List<Map> routesJson = this._routes.map((e) => e.toJson()).toList();
     return {
       'name': _name,
-      'activeRoute': _activeRoute?.toJson(),
+      'activeRoute': _activeRouteIndex,
       'routes': routesJson
     };
   }
