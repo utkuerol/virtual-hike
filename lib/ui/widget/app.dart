@@ -306,9 +306,7 @@ class _MyAppState extends State<MyApp> {
                                             style: TextButton.styleFrom(
                                                 backgroundColor: Colors.white70,
                                                 primary: Colors.black87),
-                                            child: _routeSelectionOn
-                                                ? Text('Save')
-                                                : Text('Set Route'),
+                                            child: Text('Save'),
                                           ),
                                           TextButton(
                                             onPressed: _abortRouteSelection,
@@ -326,7 +324,7 @@ class _MyAppState extends State<MyApp> {
                                           primary: Colors.black87),
                                       child: _routeSelectionOn
                                           ? Text('Save')
-                                          : Text('Set Route'),
+                                          : Text('New Route'),
                                     ),
                               SizedBox(height: 8),
                               Row(
@@ -338,7 +336,7 @@ class _MyAppState extends State<MyApp> {
                                           .getActiveRoute()
                                           ?.getStart()
                                           .toString()
-                                          .substring(0, 16) ??
+                                          .substring(0, 11) ??
                                       "N/A"),
                                 ],
                               ),
@@ -415,6 +413,9 @@ class _MyAppState extends State<MyApp> {
                 errorTileCallback: (i, j) {
                   MyAppAlerts.alertMapProviderError(context);
                 }),
+            PolylineLayerOptions(
+              polylines: _drawPath(),
+            ),
             MarkerLayerOptions(
               markers: [
                 Marker(
@@ -452,9 +453,6 @@ class _MyAppState extends State<MyApp> {
                 ),
               ],
             ),
-            PolylineLayerOptions(
-              polylines: _drawPath(),
-            )
           ],
         ));
   }
@@ -473,6 +471,7 @@ class _MyAppState extends State<MyApp> {
             .getPath()
             .points
             .sublist(0, route.getPath().getAtPointInPath() + 1);
+        completedPoints.add(route.getAt());
       }
     }
     polylines = <Polyline>[

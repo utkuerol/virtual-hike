@@ -16,7 +16,7 @@ class Welcome extends Text {
             !routeSelectionOn
                 ? TextSpan(
                     text:
-                        "\nTo create a route press the \"Set Route\" button below.",
+                        "\nTo create a new route press the \"New Route\" button below.",
                     style: TextStyle(fontSize: 20, color: Colors.white70),
                   )
                 : TextSpan(
