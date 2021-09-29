@@ -18,6 +18,7 @@ import 'package:virtual_hike/ui/alerts.dart';
 import 'package:virtual_hike/ui/widget/app_bar.dart';
 import 'package:virtual_hike/ui/widget/welcome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class MyApp extends StatefulWidget {
   final Hiker? hiker;
@@ -280,11 +281,11 @@ class _MyAppState extends State<MyApp> {
               ],
             ),
           ),
-          DraggableScrollableSheet(
-            initialChildSize: 0.5,
-            minChildSize: 0.13,
-            maxChildSize: 0.9,
-            builder: (BuildContext context, myscrollController) {
+          SlidingUpPanel(
+            renderPanelSheet: false,
+            minHeight: 180,
+            maxHeight: 500,
+            panelBuilder: (myscrollController) {
               return Padding(
                   padding: const EdgeInsets.symmetric(),
                   child: Container(
